@@ -133,8 +133,31 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>[TOC]</p>
-<h1 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h1><p>特点：参数共享</p>
+        <!-- toc -->
+
+<ul>
+<li><a href="#cnn">CNN</a></li>
+<li><a href="#rnn">RNN</a></li>
+<li><a href="#lstm">LSTM</a></li>
+<li><a href="#variants-on-lstm">VARIANTS ON LSTM</a><ul>
+<li><a href="#peephole-version">PEEPHOLE VERSION</a></li>
+<li><a href="#shared-gate">SHARED GATE</a></li>
+<li><a href="#gru%E5%BE%85%E8%A1%A5%E5%85%85">GRU(待补充)</a></li>
+</ul>
+</li>
+<li><a href="#bilstm">BILSTM</a></li>
+<li><a href="#transformer">TRANSFORMER</a><ul>
+<li><a href="#encoder">ENCODER</a></li>
+<li><a href="#self-attention">SELF-ATTENTION</a></li>
+<li><a href="#residuals">RESIDUALS</a></li>
+<li><a href="#decoder">DECODER</a></li>
+</ul>
+</li>
+<li><a href="#self-regression">Self Regression</a></li>
+</ul>
+<!-- tocstop -->
+
+<h1><span id="cnn">CNN</span></h1><p>特点：参数共享</p>
 <p>引入卷积核的原因在于全连接层所需的参数太多容易过拟合</p>
 <p><strong>卷积的作用</strong></p>
 <p>​        卷积核对应图片之中的感受野，卷积上的权重表现了图片不同位置的focus。</p>
@@ -152,7 +175,7 @@
 <p><strong>全连接层</strong></p>
 <p>​        将输出变成一维向量</p>
 <p>​        存在问题：参数多容易过拟合</p>
-<h1 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h1><p>循环神经网络。为了让模型有记忆。</p>
+<h1><span id="rnn">RNN</span></h1><p>循环神经网络。为了让模型有记忆。</p>
 <p><img src="/2022/01/07/RNN/img-1.jpg" alt="img"></p>
 <p>以上的图片展示了RNN的基本思路。</p>
 <p>其中左半部分中的循环层一旦去掉，模型则退化成为了一个基本的神经网络模型。</p>
@@ -161,82 +184,82 @@
 <p>U – 隐藏层到输出层的权重</p>
 <p>W – 前一轮隐藏层到当前隐藏层的权重</p>
 <p>更具体来讲，RNN模型可以看做如下：</p>
-<p><img src="/RNN/img-2.jpg" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-2.jpg" alt="img"></p>
 <p>前一张图里的X，S，O均为向量。</p>
 <p>后一张图中的每个单元则表示一个单独的值。</p>
 <p>因此可见，隐藏层的当前状态有两个决定因素：当前的输入和前一个时间片的隐藏层的状态（记忆）。</p>
-<h1 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h1><p>RNN 的示意图如下：</p>
-<p><img src="/RNN/img-3.png" alt="img"></p>
+<h1><span id="lstm">LSTM</span></h1><p>RNN 的示意图如下：</p>
+<p><img src="/2022/01/07/RNN/img-3.png" alt="img"></p>
 <p>RNN理论上可以记忆先前从输入中获取的知识，但是由于记忆没有选择性，因此只能记忆比较短的内容。当面对长句子时候，RNN模型不能够很好的处理。</p>
 <p>因此需要一种模型可以抓住关键信息。LSTM是RNN的一种变体，可以学习到long-term dependencies。</p>
 <p>RNN单元内部具体操作，如下：</p>
-<p><img src="/RNN/img-5.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-5.png" alt="img"></p>
 <p>也就是在RNN部分的  中，f为tanh。</p>
 <p>tanh为常见的激活函数，曲线和sigmoid有类似之处，但是相比sigmoid存在的梯度消失问题，tanh有所缓解。</p>
 <p>RNN中的tanh主要是在模型中引入非线性。</p>
 <p>相比起RNN，LSTM的内部模块更加复杂：</p>
-<p><img src="/RNN/img-6.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-6.png" alt="img"></p>
 <p>其中：</p>
-<p><img src="/RNN/img-7.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-7.png" alt="img"></p>
 <p>每一个时间点上的状态叫做<strong>cell state</strong></p>
 <p>LSTM的基本思想为：<strong>忘记该忘记的，记住该记住的</strong></p>
 <p>首先是如下这条线路：</p>
-<p><img src="/RNN/img-8.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-8.png" alt="img"></p>
 <p>这表示前一个cell state如果没有做任何的选择，也没有加入当前cell state的输入内容的话，就会直接传递给下一个cell state</p>
 <p>因为我们需要先遗忘一部分不重要的东西，因此先通过遗忘门：</p>
-<p><img src="/RNN/img-9.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-9.png" alt="img"></p>
 <p>这里的  是一个介于0到1之间的向量，用于描述记下来多少信息。</p>
 <p>先将  和  拼接成一个更大的向量，然后用  （权重矩阵）与它们相乘 — 空间映射，将原本的向量映射到与 相同，同时向量中的每一个元素都包含了  和  的全部信息。实际上该操作与  完全相同。</p>
 <p>加上一个bias后，通过sigmoid层，将数值变到0到1的区间内，用于描述记住多少信息。</p>
 <p>接下来我们需要对新的信息进行记忆，也就是记忆门：</p>
-<p><img src="/RNN/img-10.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-10.png" alt="img"></p>
 <p> 为当前信息，我们需要挑选重要信息加入到 当中。tanh作用为激活函数。</p>
 <p> 的作用类似于之前的  只是， 用来挑选  中记忆多少， 用来挑选当前记忆中记忆多少。</p>
 <p> 与  相乘之后相当于重要的当前信息，然后加入到 当中。</p>
 <p>这个时候获得的 就是当前的cell state 的完整信息。</p>
 <p>下面则是控制输出：</p>
-<p><img src="/./RNN/img-11.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/img-11.png" alt="img"></p>
 <p> 用来选择哪些信息进行输出。</p>
 <p>tanh 用来将结果压缩到 -1 到 1 之间。</p>
 <p>输出。</p>
-<h1 id="VARIANTS-ON-LSTM"><a href="#VARIANTS-ON-LSTM" class="headerlink" title="VARIANTS ON LSTM"></a>VARIANTS ON LSTM</h1><h2 id="PEEPHOLE-VERSION"><a href="#PEEPHOLE-VERSION" class="headerlink" title="PEEPHOLE VERSION"></a>PEEPHOLE VERSION</h2><p>这种版本的主要特点是gate的输出也参考了cell state的信息。orginal version gate的输出只利用了当前状态和隐藏层信息。</p>
-<p><img src="/RNN/img-12.png" alt="img"></p>
+<h1><span id="variants-on-lstm">VARIANTS ON LSTM</span></h1><h2><span id="peephole-version">PEEPHOLE VERSION</span></h2><p>这种版本的主要特点是gate的输出也参考了cell state的信息。orginal version gate的输出只利用了当前状态和隐藏层信息。</p>
+<p><img src="/2022/01/07/RNN/img-12.png" alt="img"></p>
 <p>该示意图是所有的gate都融合了cell state的信息，但是许多论文只是部分gate融合cell state 信息。</p>
-<h2 id="SHARED-GATE"><a href="#SHARED-GATE" class="headerlink" title="SHARED GATE"></a>SHARED GATE</h2><p>这种版本让forget gate 和 input gate 融合，使用相同的矩阵参数。</p>
-<p><img src="/RNN/img-13.png" alt="img"></p>
+<h2><span id="shared-gate">SHARED GATE</span></h2><p>这种版本让forget gate 和 input gate 融合，使用相同的矩阵参数。</p>
+<p><img src="/2022/01/07/RNN/img-13.png" alt="img"></p>
 <p>也就是哪部分的信息被遗忘了，就用哪部分的的新信息来填补。</p>
-<h2 id="GRU-待补充"><a href="#GRU-待补充" class="headerlink" title="GRU(待补充)"></a>GRU(待补充)</h2><p>这种版本让隐藏层和cell state融合了：</p>
-<p><img src="/RNN/img-14.png" alt="img"></p>
-<h1 id="BILSTM"><a href="#BILSTM" class="headerlink" title="BILSTM"></a>BILSTM</h1><p><img src="/RNN/img-15.png" alt="img"></p>
+<h2><span id="gru待补充">GRU(待补充)</span></h2><p>这种版本让隐藏层和cell state融合了：</p>
+<p><img src="/2022/01/07/RNN/img-14.png" alt="img"></p>
+<h1><span id="bilstm">BILSTM</span></h1><p><img src="/2022/01/07/RNN/img-15.png" alt="img"></p>
 <p>双向LSTM只是用了两个LSTM，一个的句子从前向后输入，另一个从后向前输入。这种方法一定程度上融合了前后的信息。</p>
 <p>两个LSTM，对应cell的输出（隐藏层）相互拼接的到结果。</p>
-<h1 id="TRANSFORMER"><a href="#TRANSFORMER" class="headerlink" title="TRANSFORMER"></a>TRANSFORMER</h1><p><strong>Motivation:</strong></p>
+<h1><span id="transformer">TRANSFORMER</span></h1><p><strong>Motivation:</strong></p>
 <ol>
 <li>当前Cell state的计算依赖于前一个Cell state计算的结果，因此训练难以并行。</li>
 <li>虽然LSTM一定程度上缓解了长期依赖问题，但是特长期问题仍然存在</li>
 </ol>
-<h2 id="ENCODER"><a href="#ENCODER" class="headerlink" title="ENCODER"></a>ENCODER</h2><p>当我们想去实现一个机器翻译的工作时候。</p>
+<h2><span id="encoder">ENCODER</span></h2><p>当我们想去实现一个机器翻译的工作时候。</p>
 <p>Seq2Seq的基本模型如下：</p>
-<p><img src="/RNN/transformer-1.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-1.png" alt="img"></p>
 <p>其中的Encoder和Decoder都分别为一个RNN。</p>
 <p>相比起 Seq2Seq 模型，Transformer的结构如下：（这个示例也是seq2seq形式的，在一些情况下，Transformer没有decoder这些部分）</p>
-<p><img src="/RNN/transformer-2.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-2.png" alt="img"></p>
 <p>由多个Encoder 和多个Decoder堆叠而成。<del>之所以有这样的设计是因为我们希望翻译得到的每一个词都能有和它对应的原词。一个Encoder对应一个原本的word，一个decoder对应一个翻译的到word。</del></p>
 <p>每一个Encoder对应内部结构如下：</p>
-<p><img src="/RNN/transformer-3.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-3.png" alt="img"></p>
 <p>Encoder的输入先经过一个Self-Attention层，再经过一个Feed Forward Neural Network.</p>
-<p><img src="/RNN/transformer-1-1.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-1-1.png" alt="img"></p>
 <p>需要注意的是单独的word做单独的Feed Forward Neural Network</p>
-<h2 id="SELF-ATTENTION"><a href="#SELF-ATTENTION" class="headerlink" title="SELF-ATTENTION"></a>SELF-ATTENTION</h2><p>在这里的Self-Attention的作用在于让Encoder在Encode某个word的时候可以看到其他的word。</p>
+<h2><span id="self-attention">SELF-ATTENTION</span></h2><p>在这里的Self-Attention的作用在于让Encoder在Encode某个word的时候可以看到其他的word。</p>
 <p>比如我们试图翻译如下句子：</p>
 <p>”<code>The animal didn&#39;t cross the street because it was too tired</code>”</p>
 <p>这里的it指代的是什么？相比起RNN的方式self-attention能让it和animal之间直接的联系起来。</p>
-<p><img src="/RNN/transformer-4.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-4.png" alt="img"></p>
 <p>Transformer使用的是Multihead Self-Attention，但是这里先从原始Self-Attention开始。</p>
 <p>接下来介绍原始Self-Attention的细节</p>
 <p>正如所有的Attention机制一样，Self-Attention需要3个变量，Query vector，Key vector，Value vector</p>
 <p>首先，这3个变量都是由Embedding乘各自的一个matrix获得的。需要注意的是，这3种vector的长度都要比Embedding短。</p>
-<p><img src="/RNN/transformer-5.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-5.png" alt="img"></p>
 <p>其中 以此类推。</p>
 <p>接下来，由于self-Attention 需要让每两个word之间都有连接。因此，假如句子为 “Thinking Machines” 则对于word - “Thinking” ,它的query  需要和 以及 进行点积。</p>
 <p>由于我们想要获得的是weight，因此对[, ]进行softmax操作，得到[, ]。显然  会更大，通过这种方式大部分的weight仍然在本个单词上，但会有少量的weight分布在其他的word上。</p>
@@ -246,16 +269,16 @@
 <p>比如有8个head，则有8套matrix。对于词 Thinking 得到8个self-attention输出的matrix。</p>
 <p>为了整合信息，将8个matrix进行拼接，并乘以一个wighted matrix  , 得到Multi-headed Self-Attention 的结果。</p>
 <p>流程如下：</p>
-<p><img src="/RNN/transformer-6.png" alt="img"></p>
-<p><img src="/RNN/transformer-7.png" alt="img"></p>
-<h2 id="RESIDUALS"><a href="#RESIDUALS" class="headerlink" title="RESIDUALS"></a>RESIDUALS</h2><p>由于word的位置有时也会影响对句子的理解，因此word的embedding需要加入位置信息，这种位置信息可以直接反应两个word之间的distance，将原有embedding与postion embedding（由定义的三角函数获得，并非训练得到）相加得到最终embedding。</p>
+<p><img src="/2022/01/07/RNN/transformer-6.png" alt="img"></p>
+<p><img src="/2022/01/07/RNN/transformer-7.png" alt="img"></p>
+<h2><span id="residuals">RESIDUALS</span></h2><p>由于word的位置有时也会影响对句子的理解，因此word的embedding需要加入位置信息，这种位置信息可以直接反应两个word之间的distance，将原有embedding与postion embedding（由定义的三角函数获得，并非训练得到）相加得到最终embedding。</p>
 <p>需要注意的是，计算的key，value，query，使用的是加入了position embedding的。</p>
 <p>另外每一层self-attention, 每一层的Feed Forward Neural Network后都加了一层normalization layer。</p>
 <p>做法是将对应normalization层前一层的输入和输出相加后进行normalization。如下图所示：</p>
-<p><img src="/RNN/transformer-8.png" alt="img"></p>
-<h2 id="DECODER"><a href="#DECODER" class="headerlink" title="DECODER"></a>DECODER</h2><p>完整的Transformer结构如下（此为Encoder和Decoder都是2个的情况）：</p>
-<p><img src="/RNN/transformer-9.png" alt="img"></p>
-<h1 id="Self-Regression"><a href="#Self-Regression" class="headerlink" title="Self Regression"></a>Self Regression</h1><p>之前的模型可以有多种应用。如果应用到文本的生成，一般采用自回归的方法。</p>
+<p><img src="/2022/01/07/RNN/transformer-8.png" alt="img"></p>
+<h2><span id="decoder">DECODER</span></h2><p>完整的Transformer结构如下（此为Encoder和Decoder都是2个的情况）：</p>
+<p><img src="/2022/01/07/RNN/transformer-9.png" alt="img"></p>
+<h1><span id="self-regression">Self Regression</span></h1><p>之前的模型可以有多种应用。如果应用到文本的生成，一般采用自回归的方法。</p>
 <p>也就是：</p>
 <ul>
 <li>训练时，每一个cell输入是ground truth中的前一个词。cell的输出和ground truth计算损失，做更新。</li>
@@ -362,14 +385,14 @@
     <ul class="categorys-list">
       
         <li class="categorys-list-item">
-          <a href="/categories/BasicModels/">
-            BasicModels (1)
+          <a href="/categories/other/">
+            other (1)
           </a>
         </li>
       
         <li class="categorys-list-item">
-          <a href="/categories/other/">
-            other (1)
+          <a href="/categories/BasicModels/">
+            BasicModels (1)
           </a>
         </li>
       
