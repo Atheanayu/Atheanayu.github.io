@@ -133,7 +133,8 @@
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h1 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h1><p>特点：参数共享</p>
+        <p>[TOC]</p>
+<h1 id="CNN"><a href="#CNN" class="headerlink" title="CNN"></a>CNN</h1><p>特点：参数共享</p>
 <p>引入卷积核的原因在于全连接层所需的参数太多容易过拟合</p>
 <p><strong>卷积的作用</strong></p>
 <p>​        卷积核对应图片之中的感受野，卷积上的权重表现了图片不同位置的focus。</p>
@@ -254,6 +255,12 @@
 <p><img src="imgs/RNN/transformer-8.png" alt="img"></p>
 <h2 id="DECODER"><a href="#DECODER" class="headerlink" title="DECODER"></a>DECODER</h2><p>完整的Transformer结构如下（此为Encoder和Decoder都是2个的情况）：</p>
 <p><img src="imgs/RNN/transformer-9.png" alt="img"></p>
+<h1 id="Self-Regression"><a href="#Self-Regression" class="headerlink" title="Self Regression"></a>Self Regression</h1><p>之前的模型可以有多种应用。如果应用到文本的生成，一般采用自回归的方法。</p>
+<p>也就是：</p>
+<ul>
+<li>训练时，每一个cell输入是ground truth中的前一个词。cell的输出和ground truth计算损失，做更新。</li>
+<li>生成时，每一个cell的输入是前一个生成的词。持续生成直到生成终止符号。</li>
+</ul>
 
       </section>
 
